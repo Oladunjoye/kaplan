@@ -1,43 +1,76 @@
-import React from 'react';
-import NavBar from '../components/common/NavBar';
-import Gallery from '../components/ProviderGallery'
-import NewProviderForm from '../components/forms/NewProviderForm';
-import ApiService from '../utils/apiService';
-import LoadingScreen from '../components/common/LoadingScreen';
+import React from "react";
+import NavBar from "../components/common/NavBar";
+import Gallery from "../components/ProviderGallery";
+import NewProviderForm from "../components/forms/NewProviderForm";
+import ApiService from "../utils/apiService";
+import LoadingScreen from "../components/common/LoadingScreen";
+import { pathGet } from "../utils/utils";
 
 class ExplorePage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       data: [],
-      isLoading: false
+      isLoading: false,
     };
   }
 
   componentDidMount() {
     this.setLoading(true);
-    ApiService.get(ApiService.ENDPOINTS.providers)
-      .then((data) => {
-        this.setState({
-          isLoading: false,
-          data: data.data
-        });
+    ApiService.get(ApiService.ENDPOINTS.providers).then((data) => {
+      this.setState({
+        isLoading: false,
+        data,
       });
+    });
   }
 
   setLoading = (isLoading) => {
     this.setState({
-      isLoading
+      isLoading,
     });
-  }
+  };
 
   filterProviders = (event) => {
     // TASK 2:
     // On input, filter Available Providers based on Name, Address and Type
     //
     // ============== CODE GOES BELOW THIS LINE :) ==============
-    
-  }
+    // console.log(event.target.value);
+    const a = {
+      user: {
+        id: 1,
+        name: {
+          firstName: "James",
+          lastName: "Ibori",
+        },
+        location: {
+          city: "Ikoyi",
+          state: "Lagos",
+          address: "One expensive house like that",
+        },
+      },
+    };
+    console.log(pathGet(a, "One expensive house like that"));
+
+    let data = this.state.data;
+    let intialData = data;
+    let query = event.target.value.toLowerCase();
+
+    let filteredData =
+      query &&
+      data.filter((item) => {
+        let name = item.name ? item.name.toLowerCase() : "";
+        let address = item.address ? item.address.toLowerCase() : "";
+
+        return name.includes(query) || address.includes(query);
+      });
+
+    // let filteredData = pathGet(data, query);
+    // debugger;
+
+    this.setState({ data: filteredData }, () => console.log(this.state.data));
+  };
 
   switchView = () => {
     // TASK 4:
@@ -45,7 +78,7 @@ class ExplorePage extends React.Component {
     // based on whatever the user selects.
     //
     // ============== CODE GOES BELOW THIS LINE :) ==============
-  }
+  };
 
   render() {
     const { isLoading, data } = this.state;
@@ -55,7 +88,7 @@ class ExplorePage extends React.Component {
         <div className="content__main">
           <section className="main__top-providers">
             <h2 className="text-header">Our Providers</h2>
-            <div className="flex-row box-shadow" style={{padding:"1rem"}}>
+            <div className="flex-row box-shadow" style={{ padding: "1rem" }}>
               <div>
                 <input
                   type="text"
@@ -66,28 +99,35 @@ class ExplorePage extends React.Component {
                 />
               </div>
               <div className="layout-switcher">
-                  <i className="fa fa-images active" onClick={this.switchView}></i>
-                  <i className="fa fa-th-large" onClick={this.switchView}></i>
-                  <i className="fa fa-th-list" onClick={this.switchView}></i>
-                </div>
+                <i
+                  className="fa fa-images active"
+                  onClick={this.switchView}
+                ></i>
+                <i className="fa fa-th-large" onClick={this.switchView}></i>
+                <i className="fa fa-th-list" onClick={this.switchView}></i>
+              </div>
             </div>
-            {(isLoading || !data) ? (
+            {isLoading || !data ? (
               <LoadingScreen />
             ) : (
-              <React.Fragment>                
+              <React.Fragment>
                 <Gallery
-                  items={data.map((item) => ({imageUrl: item.imageUrl, name: item.name, description: item.type}))}
+                  items={data.map((item) => ({
+                    images: item.images,
+                    name: item.name,
+                    description: item.type,
+                  }))}
                 />
               </React.Fragment>
             )}
           </section>
           <section className="main__new-provider fixed">
-              <div className="new-provider">
-                <h2 className="text-header">Can't find a Provider?</h2>
-                <p className="text-body">Feel free to recommend a new one.</p>
-                <hr/>
-                <NewProviderForm />
-              </div>
+            <div className="new-provider">
+              <h2 className="text-header">Can't find a Provider?</h2>
+              <p className="text-body">Feel free to recommend a new one.</p>
+              <hr />
+              <NewProviderForm />
+            </div>
           </section>
         </div>
       </div>

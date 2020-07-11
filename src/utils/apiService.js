@@ -1,18 +1,22 @@
-import queryString from 'querystring';
+import queryString from "querystring";
 /**
  * @class ApiService
  * @description Contains methods for making asynchronous Http requests
  * @exports ApiService
  */
 
- const BASE_URL = "https://pro-zone.herokuapp.com";
+const BASE_URL = "https://pro-zone.herokuapp.com";
+
+const headers = {
+  Authorization:
+    "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNTk0MTgzMzUwLCJleHAiOjE1OTY3NzUzNTB9.SS17FWeuomLQxAqyIEiPk0hTjLcKjh91XpM6U2X7dkM",
+};
 
 class ApiService {
   static ENDPOINTS = {
     providers: `${BASE_URL}/providers`,
-    imageUpload: `${BASE_URL}/upload`
-
-  }
+    imageUpload: `${BASE_URL}/upload`,
+  };
 
   /**
    * @method get
@@ -24,11 +28,11 @@ class ApiService {
 
   static async get(url, data) {
     const response = await fetch(
-      `${url}${data ? `?${queryString.stringify(data)}` : ''}`
+      `${url}${data ? `?${queryString.stringify(data)}` : ""}`,
+      { headers }
     );
     return response.json();
   }
-
 
   /**
    * @method post
@@ -39,12 +43,10 @@ class ApiService {
    */
 
   static async post(url, data) {
-    const response = await fetch(
-      url, {
-        method: 'POST',
-        body: data
-      }
-    );
+    const response = await fetch(url, {
+      method: "POST",
+      body: data,
+    });
     return response.json();
   }
 }
